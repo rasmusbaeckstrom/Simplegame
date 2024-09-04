@@ -1,36 +1,42 @@
 package org.example;
 
+import java.util.Random;
+import java.util.Scanner;
+
 public class Game {
     public static void main(String[] args) {
+        Maze maze = new Maze(15, 10);
+        Player player = new Player("Rasmus", 8, 8, 100, 10, null);
+        Monster monster = new Monster(5, 5, 50, 5);
+        Treasure treasure = new Treasure(8, 1);
 
-        Item item = new Item(0,0);
-        Player player = new Player("", 0, 0, 0, 0, item);
-        Sword sword = new Sword(0, 0, "");
+        maze.setPlayerPosition(player.getX(), player.getY());
+        maze.setMonsterPosition(monster.getX(), monster.getY());
+        treasure.placeTreasure(maze);
 
-        player.setName("Rasmus");
-        player.setX(5);
-        player.setY(10);
-        player.setHealth(100);
-        player.setStrength(10);
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+        boolean gameRunning = true;
 
-        item.setX(10);
-        item.setY(20);
+        while (gameRunning) {
+            maze.printMaze();
+            System.out.println("Type in your move! use: W A S D: ");
+            String direction = scanner.nextLine();
+            player.move(direction, maze);
 
-        sword.setMaterial("Steel");
-        sword.setX(15);
-        sword.setY(30);
+            String[] directions = {"w", "s", "a", "d"};
+            String monsterDirection = directions[random.nextInt(directions.length)];
+            monster.move(monsterDirection, maze);
 
-        System.out.println("Player name: " + player.getName());
-        System.out.println("Player position X: " + player.getX());
-        System.out.println("Player position Y: " + player.getY());
-        System.out.println("Player health: " + player.getHealth());
-        System.out.println("Player strength: " + player.getStrength());
+            if (player.getX() == monster.getX() && player.getY() == monster.getY()) {
+                System.out.println("You encountered a monster! Game over.");
+                gameRunning = false;
+            } else if (player.getX() == treasure.getX() && player.getY() == treasure.getY()) {
+                System.out.println("You found the treasure! You win!");
+                gameRunning = false;
+            }
+        }
 
-        System.out.println("Item x: " + item.getX());
-        System.out.println("Item y: " + item.getY());
-
-        System.out.println("Sword material: " + sword.getMaterial());
-        System.out.println("Sword x: " + sword.getX());
-        System.out.println("Sword y: " + sword.getY());
+        scanner.close();
     }
 }
