@@ -1,6 +1,6 @@
 package org.example;
 
-public class Player {
+public class Player implements Movable {
     private String name;
     private int x;
     private int y;
@@ -15,6 +15,35 @@ public class Player {
         this.health = health;
         this.strength = strength;
         this.item = item;
+    }
+
+    @Override
+    public void move(String direction, Maze maze) {
+        int newX = x;
+        int newY = y;
+
+        switch (direction.toLowerCase()) {
+            case "w":
+                newY--;
+                break;
+            case "s":
+                newY++;
+                break;
+            case "a":
+                newX--;
+                break;
+            case "d":
+                newX++;
+                break;
+        }
+
+        if (!maze.isWall(newX, newY)) {
+            x = newX;
+            y = newY;
+            maze.setPlayerPosition(x, y);
+        } else {
+            System.out.println("You hit a wall!");
+        }
     }
 
     public String getName() {
