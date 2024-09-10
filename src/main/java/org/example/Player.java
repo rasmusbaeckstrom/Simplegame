@@ -1,6 +1,6 @@
 package org.example;
 
-public class Player implements Movable {
+public class Player implements Movable, Obstacle {
     private String name;
     private int x;
     private int y;
@@ -37,13 +37,18 @@ public class Player implements Movable {
                 break;
         }
 
-        if (!maze.isWall(newX, newY)) {
+        if (!maze.isObstacle(newX, newY)) {
             x = newX;
             y = newY;
             maze.setPlayerPosition(x, y);
         } else {
             System.out.println("You hit a wall!");
         }
+    }
+
+    @Override
+    public boolean isObstacle(int x, int y) {
+        return this.x == x && this.y == y;
     }
 
     public String getName() {

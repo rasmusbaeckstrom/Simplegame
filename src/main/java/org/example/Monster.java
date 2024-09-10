@@ -1,6 +1,6 @@
 package org.example;
 
-public class Monster extends Item implements Movable {
+public class Monster extends Item implements Movable, Obstacle {
     private int health;
     private int strength;
 
@@ -30,11 +30,15 @@ public class Monster extends Item implements Movable {
                 break;
         }
 
-        if (!maze.isWall(newX, newY)) {
+        if (!maze.isObstacle(newX, newY)) {
             setX(newX);
             setY(newY);
-            maze.setMonsterPosition(newX, newY);
         }
+    }
+
+    @Override
+    public boolean isObstacle(int x, int y) {
+        return getX() == x && getY() == y;
     }
 
     public int getHealth() {

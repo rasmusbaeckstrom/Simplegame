@@ -1,11 +1,13 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Maze {
     private final ArrayList<ArrayList<String>> structure;
     private int playerX, playerY;
-    private int monsterX, monsterY;
+    private final List<Obstacle> obstacles = new ArrayList<>();
+    private final List<Monster> monsters = new ArrayList<>();
 
     public Maze(int width, int height) {
         structure = new ArrayList<>();
@@ -22,7 +24,7 @@ public class Maze {
         addVerticalWall(0, 0, height); // Left wall
         addVerticalWall(width - 1, 0, height); // Right wall
 
-        // Add some internal walls
+        // Add internal walls
         addVerticalWall(5, 3, 4);
         addHorizontalWall(6, 5, 11);
         addVerticalWall(20, 1, 10);
@@ -46,23 +48,29 @@ public class Maze {
         addHorizontalWall(24, 5, 15);
         addVerticalWall(10, 18, 3);
         addHorizontalWall(3, 35, 5);
-
     }
 
     private void addHorizontalWall(int y, int startX, int length) {
         for (int x = startX; x < startX + length; x++) {
             structure.get(y).set(x, "█ ");
+            obstacles.add(new Wall(x, y));
         }
     }
 
     private void addVerticalWall(int x, int startY, int length) {
         for (int y = startY; y < startY + length; y++) {
             structure.get(y).set(x, "█ ");
+            obstacles.add(new Wall(x, y));
         }
     }
 
-    public boolean isWall(int x, int y) {
-        return structure.get(y).get(x).equals("█ ");
+    public boolean isObstacle(int x, int y) {
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.isObstacle(x, y)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setPlayerPosition(int x, int y) {
@@ -70,9 +78,15 @@ public class Maze {
         playerY = y;
     }
 
-    public void setMonsterPosition(int x, int y) {
-        monsterX = x;
-        monsterY = y;
+    public void addMonsterPosition(Monster monster) {
+        monsters.add(monster);
+        obstacles.add(monster);
+    }
+
+    public void updateMonsterPosition(int index, int x, int y) {
+        Monster monster = monsters.get(index);
+        monster.setX(x);
+        monster.setY(y);
     }
 
     public void setTreasure(Treasure treasure) {
@@ -83,11 +97,19 @@ public class Maze {
         for (int y = 0; y < structure.size(); y++) {
             for (int x = 0; x < structure.get(y).size(); x++) {
                 if (x == playerX && y == playerY) {
-                    System.out.print("P "); // Player symbol
-                } else if (x == monsterX && y == monsterY) {
-                    System.out.print("M "); // Monster symbol
+                    System.out.print("P ");
                 } else {
-                    System.out.print(structure.get(y).get(x));
+                    boolean isMonster = false;
+                    for (Monster monster : monsters) {
+                        if (monster.isObstacle(x, y)) {
+                            System.out.print("M ");
+                            isMonster = true;
+                            break;
+                        }
+                    }
+                    if (!isMonster) {
+                        System.out.print(structure.get(y).get(x));
+                    }
                 }
             }
             System.out.println();
